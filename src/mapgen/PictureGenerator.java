@@ -49,6 +49,9 @@ public class PictureGenerator {
                     case Sand :
                         g.setColor(Color.orange);
                         break;
+                    case Water :
+                        g.setColor(Color.blue);
+                        break;
                 }                
                 g.fillRect(j * lenghtCell + lenghtCell / 4, i * lenghtCell + lenghtCell / 4, lenghtCell / 2, lenghtCell / 2);
             }

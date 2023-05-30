@@ -12,10 +12,10 @@ import java.util.ArrayList;
 enum TypeCell{
     Start,
     Exit,
+    Empty,
     Sand,
     Rock,
-    Water,
-    Empty
+    Water    
 }
 enum PossibleDirection{
     Left,
@@ -118,13 +118,13 @@ public class MapCell {
         
         if(dot.getX() == 0){
             if(dot.getY() > 0)
-                return PossibleDirection.Down;
-            else return PossibleDirection.Up;
+                return PossibleDirection.Up;
+            else return PossibleDirection.Down;
         }
         else{
             if(dot.getX() > 0)
-                return PossibleDirection.Right;
-            else return PossibleDirection.Left;
+                return PossibleDirection.Left;
+            else return PossibleDirection.Right;
         }
     }
 
@@ -132,6 +132,11 @@ public class MapCell {
         System.out.print(position.print() + "\tType\t:\t" + String.valueOf(type)+"\n"
                 + "Number Of Ways\t:\t" + String.valueOf(ways.size()) +"\n"
                         + "Number Of Neighbor\t" + String.valueOf(neighboringCells.size()) + "\n");
+        
+        for (int i = 0; i < neighboringCells.size(); i++) {
+            System.out.print(neighboringCells.get(i).position.print() + "\t" + String.valueOf(calculateDirection(this, neighboringCells.get(i))) + "\n");
+        }
+        
         for (int i = 0; i < ways.size(); i++) {
             System.out.print(String.valueOf(ways.get(i).getDirection()) + "\t\t" + String.valueOf(ways.get(i).getStatus()) + "\n");
         }
