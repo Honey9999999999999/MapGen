@@ -66,17 +66,15 @@ public class Field extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    ArrayList<MapCell> map = new ArrayList<MapCell>();
+    
+    Map map = new Map();
     
     private void ButtonGeneratorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonGeneratorActionPerformed
         
-        map.clear();
-        for (int i = 0; i < 25; i++) {
-            map.add(new MapCell());
-        }
+        map.generate();
+        Picture.setIcon(PictureGenerator.createPicture(PicturePane, map.Cells));
         
-        Picture.setIcon(PictureGenerator.createPicture(PicturePane, map));
+        map.printInfo();
     }//GEN-LAST:event_ButtonGeneratorActionPerformed
 
     /**
