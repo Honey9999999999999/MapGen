@@ -11,7 +11,7 @@ package mapgen;
 public class Map {    
     public MapCell[][] Cells;
     
-    public void generate(){
+    public void generate() throws Exception{
         Cells = MapGen.generate();
     }
     

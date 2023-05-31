@@ -44,7 +44,7 @@ public class PictureGenerator {
                         g.setColor(Color.WHITE);
                         break;
                     case Rock :
-                        g.setColor(Color.GRAY);
+                        g.setColor(Color.LIGHT_GRAY);
                         break;
                     case Sand :
                         g.setColor(Color.orange);

@@ -22,7 +22,7 @@ public class MapGen {
     private static PossibleDirection direction;
     private static MapCell neighbour;
     
-    public static MapCell[][] generate(){
+    public static MapCell[][] generate() throws Exception{
         cells = new ArrayList<MapCell>();
         map = new MapCell[5][5];
         
@@ -34,135 +34,165 @@ public class MapGen {
         
         MapCell start = map[0][ran.nextInt(0, 5)];
         start.type = TypeCell.Start;
-           
-        for (int i = 0; i < 2; i++) {
-            if(tryFindNeighbour(start)){
-                if(!isAlreadyNeighbor(neighbour))
-                    cells.add(neighbour);
-                neighbour.type = TypeCell.Sand;
-                start.addNeighbour(neighbour);
+        cells.add(start);
+        
+        for (int i = 0; i < start.ways.size(); i++) {
+           System.out.print(start.ways.get(i).getStatus() + "\n");
+        }       
+
+        int countIteration = 1;
+        int allIteration = 6;
+        int limiter = 0;
+        int countCells = 0;
+        for (int i = 0; i < allIteration; i++) {
+            for (int j = 0; j < countIteration; j++) {
+                //cells.add(addNearestNeighbor(TypeCell.values()[ran.nextInt(3, 6)]));
+                cells.add(addNearestNeighbor(TypeCell.Rock));
+                
+                limiter = calculateFreeCells();
+                countCells = (map.length * map.length) - 1 - limiter;
+            }
+            countIteration = limiter < countCells ? limiter : countCells;
+            
+            System.out.print("Pull\t\t" + map.length * map.length + "\n"
+                + "limiter\t\t" + limiter + "\n"
+                + "all cells\t" + countCells + "\n\n");
+            
+            if(i == allIteration - 1){
+                cells.add(addNearestNeighbor(TypeCell.Exit));
             }
         }
         
-
-        int countIteration = ran.nextInt(1, cells.size());
-        int allIteration = 12;
-        for (int i = 0; i < allIteration; i++) {
-            for (int j = 0; j < countIteration; j++) {
-               MapCell cell;
-                do {
-                    cell = cells.get(ran.nextInt(cells.size()));
-                }while(!tryFindNeighbour(cell));
+        do{
+        cells = createListEmptyCells();
+        
+        for (int i = 0; i < cells.size(); i++) {        
+            for(PossibleWay way: cells.get(i).ways){
+                if(cells.size() != 0){
+                    MapCell neighbour = getNeighbour(cells.get(i), way.getDirection());
                 
-                if(!isAlreadyNeighbor(neighbour))
-                    cells.add(neighbour);    
-                if(neighbour.type == TypeCell.Empty)
-                    neighbour.type = TypeCell.values()[ran.nextInt(3, 6)];
-                    //neighbour.type = TypeCell.Sand;
-                cell.addNeighbour(neighbour);
-                clearChance();
+                    int chance = 4 - neighbour.neighboringCells.size();
+                    if(chance != 4){
+                        if(chance > ran.nextInt(4)){
+                            cells.get(i).type = TypeCell.Sand;
+                            cells.get(i).registerNeighbours(neighbour);
+                            cells.remove(i);
+                            i = 0;
+                            break;
+                        }
+                    }
+                }
             }
-            if(i == allIteration - 1){
-                MapCell cell;
-                do {
-                    cell = cells.get(ran.nextInt(cells.size()));
-                }while(!tryFindFreeNeighbour(cell));
-                
-                if(!isAlreadyNeighbor(neighbour))
-                    cells.add(neighbour);    
-                if(neighbour.type == TypeCell.Empty)
-                    neighbour.type = TypeCell.Exit;
-                cell.addNeighbour(neighbour);
-            }
+        }
+        }while(!cells.isEmpty());
+                        
             
-            }
-        countIteration = ran.nextInt(cells.size());
+            
+                        
+        
+        
+        
+        
+        
         
         return map;
     }
+    private static ArrayList<MapCell> createListEmptyCells(){
+        ArrayList<MapCell> cells = new ArrayList<MapCell>();
+        for (int i = 0; i < map.length; i++)
+            for (int j = 0; j < map.length; j++)
+                if(map[j][i].type == TypeCell.Empty)
+                    cells.add(map[j][i]);
+        return cells;
+    }
     
-    private static void clearChance(){
-        for (int i = 0; i < cells.size(); i++) {
-            for (int j = i + 1; j < cells.size(); j++) {
-                if(cells.get(i) == cells.get(j)){
-                    cells.remove(j--);
+    private static int calculateFreeCells(){
+        int value = 0;
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map.length; j++) {
+                if(map[j][i].type == TypeCell.Empty)
+                    value++;
+            }
+        }
+        return value;
+    }
+    
+    private static MapCell addNearestNeighbor(TypeCell type) throws Exception{
+        MapCell cell;
+        PossibleDirection dir;
+        MapCell neighbour;
+        int counter = 0;        
+            do{
+                
+                cell = selectCell();
+                dir = selectDirection(cell);
+                neighbour = getNeighbour(cell, dir); 
+                if(counter++ == 200)
+                        throw new Exception("Good Neighbor does not exist ");
+            }while(type == TypeCell.Exit && neighbour.type == TypeCell.Start);
+        if(neighbour.type != TypeCell.Start)
+            neighbour.type = type;
+        tieNeighbors(cell, neighbour);
+        
+        return neighbour;
+    }
+    private static MapCell selectCell() throws Exception{
+        if(!cells.isEmpty()){
+            MapCell cell;
+            int counter = 0;
+            int min = 1;
+            do {
+                cell = cells.get(ran.nextInt(cells.size()));
+                if(counter++ == 100){
+                    min = 0;                    
                 }
-            }            
+                if(counter == 200)
+                        throw new Exception("Good choises does not exist ");
+            }while(!isGoodChoise(cell, min));
+            return cell;
         }
-        
-        int countFreeWays = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            for (int j = 0; j < cells.get(i).ways.size(); j++) {
-                if(cells.get(i).ways.get(j).getStatus() == StatusCell.No_Conections)
-                    countFreeWays++;
-            }
-            if(countFreeWays < 2)
-                cells.remove(i);
-            countFreeWays = 0;
-        }
-        
-        int nativeSize = cells.size();
-        for (int i = 0; i < nativeSize; i++) {
-            for (int j = 0; j < cells.get(i).ways.size(); j++) {
-                if(cells.get(i).ways.get(j).getStatus() == StatusCell.No_Conections){
-                    cells.add(cells.get(i));
-                }                    
-            }
-        }
-    }
-    
-    private static boolean isAlreadyNeighbor(MapCell neighbour){
-        boolean isAlreadyNeighbor = false;
-        for(MapCell cell : cells){
-                isAlreadyNeighbor = cell == neighbour;
-                if(isAlreadyNeighbor)
-                    return isAlreadyNeighbor;
-        }
-        return isAlreadyNeighbor;
-    }
-    
-    private static boolean tryFindFreeNeighbour(MapCell cell){        
-        for (int i = 0; i < 100; i++) {
-            tryFindNeighbour(cell);
-            if(neighbour.type == TypeCell.Empty){
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private static boolean tryFindNeighbour(MapCell cell){
-        if(tryChoiseDirection(cell.ways)){        
-            switch (direction){
-                case Left :
-                    neighbour = map[cell.position.getX() - 1][cell.position.getY()];  
-                    return true;
-                case Up :
-                    neighbour = map[cell.position.getX()][cell.position.getY() - 1];
-                    return true;
-                case Right :
-                    neighbour = map[cell.position.getX() + 1][cell.position.getY()];
-                    return true;
-                case Down :
-                    neighbour = map[cell.position.getX()][cell.position.getY() + 1];
-                    return true;
-
-                case default :
-                    return false;
-            }
-        }
-        else return false;
+        else{
+            Exception ex = new Exception("Good Cell is not find");
+            throw ex;
+        }        
     }    
-    private static boolean tryChoiseDirection(ArrayList<PossibleWay> ways){
+    private static boolean isGoodChoise(MapCell cell, int min){
+        int freeWays = 0;
+        for(PossibleWay way : cell.ways){
+            if(way.getStatus() == StatusCell.No_Conections)
+                freeWays++;
+        }
+        if(freeWays == 0)
+            return false;
+        else
+            return min < ran.nextInt(freeWays + 1);
+    }
+    
+    private static PossibleDirection selectDirection(MapCell cell)throws Exception{
         ArrayList<PossibleWay> freeWays = new ArrayList<PossibleWay>();
-        
-        for(PossibleWay way : ways)
+        for(PossibleWay way : cell.ways)
             if(way.getStatus() == StatusCell.No_Conections)
                 freeWays.add(way);
         if(!freeWays.isEmpty()){
-            direction = freeWays.get(ran.nextInt(freeWays.size())).getDirection();
-            return true;
+            return freeWays.get(ran.nextInt(freeWays.size())).getDirection();
         }
-        return false;
+        throw new Exception("No free ways");
+    }
+    private static MapCell getNeighbour(MapCell cell, PossibleDirection dir)throws Exception{       
+        switch (dir){
+            case Left :
+                return map[cell.position.getX() - 1][cell.position.getY()];
+            case Up :
+                return map[cell.position.getX()][cell.position.getY() - 1];
+            case Right :
+                return map[cell.position.getX() + 1][cell.position.getY()];
+            case Down :
+                return map[cell.position.getX()][cell.position.getY() + 1];
+            case default :
+                throw new Exception("Failed to get neighbor");
+        }
     }    
+    private static void tieNeighbors(MapCell cell1, MapCell cell2){
+        cell1.registerNeighbours(cell2);
+    }
 }

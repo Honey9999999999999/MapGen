@@ -6,6 +6,8 @@ package mapgen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -70,11 +72,14 @@ public class Field extends javax.swing.JFrame {
     Map map = new Map();
     
     private void ButtonGeneratorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonGeneratorActionPerformed
-        
-        map.generate();
+        try {
+            map.generate();
+        } catch (Exception ex) {
+            Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Picture.setIcon(PictureGenerator.createPicture(PicturePane, map.Cells));
         
-        map.printInfo();
+        //map.printInfo();
     }//GEN-LAST:event_ButtonGeneratorActionPerformed
 
     /**

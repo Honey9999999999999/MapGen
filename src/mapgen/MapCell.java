@@ -51,7 +51,7 @@ class PossibleWay{
         this.status = status;
     }
     
-    public void paveTheWay(PossibleDirection dir){
+    public void paveTheWay(){
         status = StatusCell.Connected;
     }
 }
@@ -88,18 +88,20 @@ public class MapCell {
     public void paveTheWay(PossibleDirection dir){
         for(PossibleWay way : ways){
             if(way.getDirection() == dir)
-                way.paveTheWay(dir);
+                way.paveTheWay();
         }
     }
 
-    public void addNeighbour(MapCell neighbour){        
+    public void registerNeighbours(MapCell neighbour){
+        addNeighbour(neighbour);
+        neighbour.addNeighbour(this);
+    }
+    
+    private void addNeighbour(MapCell neighbour){        
         if(!isAlreadyNeighbor(neighbour)){
-            neighboringCells.add(neighbour);
-            neighbour.neighboringCells.add(this);
+            neighboringCells.add(neighbour);            
             PossibleDirection dir = calculateDirection(this, neighbour);
-            paveTheWay(dir);
-            dir = calculateDirection(neighbour, this);
-            neighbour.paveTheWay(dir);
+            paveTheWay(dir);            
         }
     }
     

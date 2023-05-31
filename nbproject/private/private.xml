@@ -3,12 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/vsoro/OneDrive/Документы/GitHub/MapGen/src/mapgen/Field.java</file>
-            <file>file:/C:/Users/vsoro/OneDrive/Документы/GitHub/MapGen/src/mapgen/MapGen.java</file>
-            <file>file:/C:/Users/vsoro/OneDrive/Документы/GitHub/MapGen/src/mapgen/MapCell.java</file>
-            <file>file:/C:/Users/vsoro/OneDrive/Документы/GitHub/MapGen/src/mapgen/Map.java</file>
-            <file>file:/C:/Users/vsoro/OneDrive/Документы/GitHub/MapGen/src/mapgen/PictureGenerator.java</file>
-            <file>file:/C:/Users/vsoro/OneDrive/Документы/GitHub/MapGen/src/mapgen/Dot2D.java</file>
+            <file>file:/C:/Users/Honey/Documents/GitHub/MapGen/src/mapgen/MapGen.java</file>
+            <file>file:/C:/Users/Honey/Documents/GitHub/MapGen/src/mapgen/Field.java</file>
+            <file>file:/C:/Users/Honey/Documents/GitHub/MapGen/src/mapgen/PictureGenerator.java</file>
+            <file>file:/C:/Users/Honey/Documents/GitHub/MapGen/src/mapgen/MapCell.java</file>
+            <file>file:/C:/Users/Honey/Documents/GitHub/MapGen/src/mapgen/Map.java</file>
         </group>
     </open-files>
 </project-private>
