@@ -53,14 +53,14 @@ public class Field extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(PicturePane, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PicturePane, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addComponent(ButtonGenerator)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(PicturePane, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(PicturePane, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(ButtonGenerator))
@@ -69,7 +69,7 @@ public class Field extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    Map map = new Map();
+    Map map = new Map(7,5);
     
     private void ButtonGeneratorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonGeneratorActionPerformed
         try {
@@ -77,7 +77,7 @@ public class Field extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Picture.setIcon(PictureGenerator.createPicture(PicturePane, map.Cells));
+        Picture.setIcon(PictureGenerator.createPicture(PicturePane, map));
         
         //map.printInfo();
     }//GEN-LAST:event_ButtonGeneratorActionPerformed

@@ -12,66 +12,28 @@ import java.util.ArrayList;
 enum TypeCell{
     Start,
     Exit,
+    FirstGeneration,
     Empty,
     Sand,
     Rock,
     Water    
 }
-enum PossibleDirection{
-    Left,
-    Up,
-    Right,
-    Down
-}
-enum StatusCell{
-    No_Conections,
-    Connected    
-}
-
-class PossibleWay{
-    public PossibleWay(PossibleDirection direction){
-        this.direction = direction;
-        status = StatusCell.No_Conections;
-    }
-    
-    private PossibleDirection direction;
-    private StatusCell status;
-
-    public PossibleDirection getDirection(){
-        return direction;
-    }    
-    public StatusCell getStatus(){
-        return status;
-    }
-
-    private void setDirection(PossibleDirection direction){
-        this.direction = direction;
-    }
-    private void setStatus(StatusCell status){
-        this.status = status;
-    }
-    
-    public void paveTheWay(){
-        status = StatusCell.Connected;
-    }
-}
-
-
 
 public class MapCell {
-    public MapCell(int posX, int posY){
+    public MapCell(int posX, int posY, int widthMap, int heightMap){
         type = TypeCell.Empty;
         position = new Dot2D(posX, posY);
 
         ways = new ArrayList<PossibleWay>();
         if(posX != 0)
             addNewWay(PossibleDirection.Left);
-        if(posX != 4)
+        if(posX != widthMap - 1)
             addNewWay(PossibleDirection.Right);
         if(posY != 0)            
             addNewWay(PossibleDirection.Up);
-        if(posY != 4)
+        if(posY != heightMap - 1)
             addNewWay(PossibleDirection.Down);
+        countFreeWays = ways.size();
 
         neighboringCells = new ArrayList<MapCell>();
     }
@@ -80,6 +42,8 @@ public class MapCell {
     TypeCell type;    
     Dot2D position;
     ArrayList<MapCell>neighboringCells;
+    
+    private int countFreeWays;
 
     private void addNewWay(PossibleDirection dir){
         ways.add(new PossibleWay(dir));
@@ -90,8 +54,28 @@ public class MapCell {
             if(way.getDirection() == dir)
                 way.paveTheWay();
         }
+        countFreeWays--;
     }
 
+    public int getCountFreeWays(){
+        return countFreeWays;
+    }
+    public ArrayList<PossibleWay> getFreeWays(){
+        ArrayList<PossibleWay> freeWays = new ArrayList<>();
+        for(PossibleWay way : ways)
+            if(way.getStatus() == StatusWay.No_Conections)
+                freeWays.add(way);
+        return freeWays;
+    }
+    
+    public ArrayList<PossibleWay> getConnectedWays(){
+        ArrayList<PossibleWay> connectedWays = new ArrayList<>();
+        for(PossibleWay way : ways)
+            if(way.getStatus() == StatusWay.Connected)
+                connectedWays.add(way);
+        return connectedWays;
+    }
+    
     public void registerNeighbours(MapCell neighbour){
         addNeighbour(neighbour);
         neighbour.addNeighbour(this);
