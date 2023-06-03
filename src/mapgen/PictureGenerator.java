@@ -55,8 +55,9 @@ public class PictureGenerator {
                     case Water :
                         g.setColor(Color.blue);
                         break;
-                }                
-                g.fillRect(j * lenghtCell + lenghtCell / 4, i * lenghtCell + lenghtCell / 4, lenghtCell / 2, lenghtCell / 2);
+                }
+                if(map.cells[j][i].type != TypeCell.Empty)
+                    g.fillRect(j * lenghtCell + lenghtCell / 4, i * lenghtCell + lenghtCell / 4, lenghtCell / 2, lenghtCell / 2);
             }
         }
         

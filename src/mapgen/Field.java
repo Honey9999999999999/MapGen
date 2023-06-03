@@ -34,6 +34,9 @@ public class Field extends javax.swing.JFrame {
         PicturePane = new javax.swing.JScrollPane();
         Picture = new javax.swing.JLabel();
         ButtonGenerator = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -48,30 +51,62 @@ public class Field extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Add Start Point");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("One Iteration");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Last Iteration");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(PicturePane, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                .addComponent(ButtonGenerator)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1)
+                    .addComponent(ButtonGenerator)
+                    .addComponent(jButton3))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(PicturePane, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(ButtonGenerator))
+                .addComponent(jButton1)
+                .addGap(3, 3, 3)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ButtonGenerator)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    Map map = new Map(7,5);
+    
     
     private void ButtonGeneratorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonGeneratorActionPerformed
+        Map map = new Map(10,10);
         try {
             map.generate();
         } catch (Exception ex) {
@@ -81,6 +116,36 @@ public class Field extends javax.swing.JFrame {
         
         //map.printInfo();
     }//GEN-LAST:event_ButtonGeneratorActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        Map map = new Map(10,10);
+        try {
+            map.cells = MapGen.oneIteration();
+            Picture.setIcon(PictureGenerator.createPicture(PicturePane, map));
+        } catch (Exception ex) {
+            Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        Map map = new Map(10,10);
+        try {
+            map.cells = MapGen.prepareMap(10, 10);
+            Picture.setIcon(PictureGenerator.createPicture(PicturePane, map));
+        } catch (Exception ex) {
+            Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        Map map = new Map(10,10);
+        try {
+            map.cells = MapGen.lastIteration();
+            Picture.setIcon(PictureGenerator.createPicture(PicturePane, map));
+        } catch (Exception ex) {
+            Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -121,5 +186,8 @@ public class Field extends javax.swing.JFrame {
     private javax.swing.JButton ButtonGenerator;
     private javax.swing.JLabel Picture;
     private javax.swing.JScrollPane PicturePane;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     // End of variables declaration//GEN-END:variables
 }

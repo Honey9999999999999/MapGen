@@ -19,10 +19,41 @@ public class MapGen {
     private static ArrayList<MapCell> cellParents;
     private static Map map;
     
+    public static MapCell[][] prepareMap(int width, int height) throws Exception{
+        cellParents = new ArrayList<MapCell>();
+        map = new Map(width,height);
+        generateFirstPoint();
+        
+        return map.cells;
+    }    
+    public static MapCell[][] oneIteration() throws Exception{
+        int countEmptyCells = map.size - cellParents.size();
+        int countIteration = countEmptyCells < cellParents.size() ? countEmptyCells : cellParents.size();        
+        
+        for (int j = 0; j < countIteration; j++) {
+            MapCell newNeighbor = addNearestNeighbor();
+            //removeUnnecessary();
+            if(newNeighbor.type == TypeCell.Empty){
+                //newNeighbor.type = TypeCell.values()[ran.nextInt(4, 7)];
+                newNeighbor.type = TypeCell.Rock;
+                cellParents.add(newNeighbor);
+                countEmptyCells--;
+            }
+        }
+            
+        return map.cells;
+    }
+    public static MapCell[][] lastIteration() throws Exception{
+        generateLastPoints();
+            
+        return map.cells;
+    }
+    
     public static MapCell[][] generate(int width, int height) throws Exception{
         cellParents = new ArrayList<MapCell>();
         map = new Map(width,height);
         
+        generateFirstPoint();
         generateMainPoints();
         //generateLastPoints();
         setPointsStartAndExit();
@@ -39,13 +70,14 @@ public class MapGen {
         return _cells;
     }
     
-    
-    private static void generateMainPoints() throws Exception{
+    private static void generateFirstPoint(){
         MapCell firstPointGenerated = map.cells[ran.nextInt(map.width)][ran.nextInt(map.height)];
-        firstPointGenerated.type = TypeCell.values()[ran.nextInt(4, 7)];
-        //firstPointGenerated.type = TypeCell.FirstGeneration;
+        //firstPointGenerated.type = TypeCell.values()[ran.nextInt(4, 7)];
+        firstPointGenerated.type = TypeCell.FirstGeneration;
         cellParents.add(firstPointGenerated);
-        
+    }
+    
+    private static void generateMainPoints() throws Exception{        
         int allIteration = (int)(Math.sqrt(map.size));
         int countIteration = cellParents.size();        
         int countEmptyCells = map.size - cellParents.size();
@@ -53,7 +85,6 @@ public class MapGen {
         for (int i = 0; i < allIteration; i++) {
             for (int j = 0; j < countIteration; j++) {
                 MapCell newNeighbor = addNearestNeighbor();
-                removeUnnecessary();
                 if(newNeighbor.type == TypeCell.Empty){
                     //newNeighbor.type = TypeCell.values()[ran.nextInt(4, 7)];
                     newNeighbor.type = TypeCell.Rock;
@@ -61,19 +92,20 @@ public class MapGen {
                     countEmptyCells--;
                 }
             }
-            countIteration = countEmptyCells < cellParents.size() ? countEmptyCells : cellParents.size();            
+            countIteration = countEmptyCells < cellParents.size() ? countEmptyCells : cellParents.size();
+            removeUnnecessary();
+            if(countEmptyCells < cellParents.size())
+                break;
         }
     }
     
-    private static void removeUnnecessary(){
+     private static void removeUnnecessary(){
         for (int i = 0; i < cellParents.size(); i++) {
-            if(cellParents.get(i).getCountFreeWays() < 2){
-                if(0 == ran.nextInt(10))
-                    cellParents.remove(i);
-            }
+            if(isGoodChoise(4 - cellParents.get(i).getCountFreeWays(), 4, 1))
+                cellParents.remove(i);
         }
     }
-    
+     
     private static void generateLastPoints() throws Exception{
         if(!cellParents.isEmpty()){
             do{
@@ -81,17 +113,22 @@ public class MapGen {
 
                 for (int i = 0; i < cellParents.size(); i++){
                     MapCell cell = cellParents.get(i);
-                        MapCell neighbour = getNeighbour(cellParents.get(i), cell.ways.get(ran.nextInt(cell.ways.size())).getDirection());
-                        if(neighbour.type != TypeCell.Empty){
-                            //cellParents.get(i).type = TypeCell.values()[ran.nextInt(4, 7)];
-                            cellParents.get(i).type = TypeCell.Sand;
-                            cellParents.get(i).registerNeighbours(neighbour);
-                            cellParents.remove(i);
-                            break;
+                    MapCell neighbour;
+                    neighbour = getNeighbour(cellParents.get(i), cell.ways.get(ran.nextInt(cell.ways.size())).getDirection());
+                    if(neighbour.type != TypeCell.Empty){
+                        if(isGoodChoise(neighbour.getCountFreeWays(), 4, 2)){
+                        //cellParents.get(i).type = TypeCell.values()[ran.nextInt(4, 7)];
+                        cellParents.get(i).type = TypeCell.Sand;
+                        cellParents.get(i).registerNeighbours(neighbour);
+                        cellParents.remove(i);
+                        break;
                         }
+                    }
                 }
             }while(!cellParents.isEmpty());
         }
+        else
+            throw new Exception("Array parent cells is Empty");
     }
     
     private static MapCell addNearestNeighbor() throws Exception{
@@ -104,30 +141,31 @@ public class MapGen {
     }
     private static MapCell selectCellParent() throws Exception{
         if(!cellParents.isEmpty()){
-            MapCell cellParent = null;
-            int minFreeWays = 1;
-            
-            for (int attemptCounter = 0; attemptCounter < 100; attemptCounter++) {
-                cellParent = cellParents.get(ran.nextInt(cellParents.size()));
-                
-                if(isGoodChoise(cellParent, minFreeWays))
-                    break;
-                else if(attemptCounter == 50)
-                    minFreeWays = 0;
-            }
+            MapCell cellParent;            
+            do{
+                cellParent = cellParents.get(ran.nextInt(cellParents.size()));                
+            }while(!isGoodChoise(cellParent.getCountFreeWays(), 4, 2));
             
             return cellParent;
         }
         else
             throw new Exception("Array parent cells is Empty");
     }
-    private static boolean isGoodChoise(MapCell cellСhallenger, int minFreeWays){
-        return minFreeWays < ran.nextInt(cellСhallenger.getCountFreeWays() + 1);
+    private static boolean isGoodChoise(int value, int ultimateChance, int divider){        
+        int chance = (int)((Math.pow(value, divider) / Math.pow(ultimateChance, divider)) * 100);
+        return chance > ran.nextInt(100);
     }    
     private static PossibleDirection selectFreeDirection(MapCell cell)throws Exception{
         ArrayList<PossibleWay> freeWays = cell.getFreeWays();
         if(!freeWays.isEmpty()){
-            return freeWays.get(ran.nextInt(freeWays.size())).getDirection();
+            MapCell neighbour;
+            PossibleDirection dir;
+            do{
+                dir = freeWays.get(ran.nextInt(freeWays.size())).getDirection();
+                neighbour = getNeighbour(cell, dir);
+            }while(!isGoodChoise(neighbour.getCountFreeWays(), 4, 2));
+            return dir;
+            //return freeWays.get(ran.nextInt(freeWays.size())).getDirection();
         }
         throw new Exception("No free ways");
     }
@@ -175,7 +213,7 @@ public class MapGen {
             cells.get(ran.nextInt(cells.size())).type = type;
         }
         else{
-            int counter = map.width - 1;
+            int counter = map.width;
             do{
                 counter--;
                 for (int i = 0; i < map.height; i++) {
